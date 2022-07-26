@@ -1,0 +1,188 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/p5.min.js"></script>
+<script src="https://unpkg.com/p5.createloop@latest/dist/p5.createloop.js"></script> 
+<script>
+
+console.log('running animation.js');
+
+
+H = 300
+W = 500
+
+N = 40
+M = 13
+fps = 60
+function setup() {
+	createCanvas(W, H);
+	frameRate(fps)
+    for (let i = 0; i < N; i++) {
+        refLines.push(
+            randomLine(270, i)
+        )
+    }
+}
+
+t = 0;
+function binse(val, xdist, start_idx, end_idx) {
+    let mid_idx = Math.floor((start_idx + end_idx)/2);
+    if (start_idx == (end_idx - 1)) {
+        return end_idx
+    }
+    if (xdist[mid_idx].x > val) {
+        return binse(val, xdist, start_idx, mid_idx)
+    }
+    else {
+        return binse(val, xdist, mid_idx, end_idx)
+    }
+}
+
+rad = 8    
+s = 30;
+bgb = 20;
+
+function br(x, xlen) {
+    if (x < xlen) {
+        return 1 
+    } 
+    d = 1.6 
+    al = s*PI + 70;
+    a = -(d - 1)/(Math.pow(al, 2));
+    b = -2*a*(xlen + al)
+    c = 1 - a*Math.pow(xlen, 2) - b*xlen
+    h = a*Math.pow(x, 2) + b*x + c
+    if (h < 0) {
+        return 0
+    }
+    return h
+}
+
+
+function drawLineSegmentsTo(line, x) {
+   
+   let bf = br(x, line[line.length - 1].x)
+   let b = 0.8*bf*79*360/100;
+   if (b < bgb) {
+       return true
+   }
+   push()
+//    noFill();
+//    strokeWeight(5)
+//    colorMode(HSB, 360);
+   col = color(31, 45*360/100, b);
+   stroke(col);
+   glow(col, 10*bf);
+
+   let rem = x - line[line.length - 1].x;
+   let n_linesd = binse(x, line, 0, line.length)
+   if (rem >= 0) {
+      x = line[line.length - 1].x;
+      n_linesd -= 1;
+   }
+   beginShape();
+   vertex(line[0].x, line[0].y);
+   for (let i = 1; i < n_linesd; i++) {
+        vertex(line[i].x, line[i].y);
+   }
+   let dy = line[n_linesd].y - line[n_linesd - 1].y
+   let dx = line[n_linesd].x - line[n_linesd - 1].x;
+   let grad = dy/dx;
+
+   y = grad*(x - line[n_linesd - 1].x) + line[n_linesd - 1].y
+   let lineAngle = Math.atan2(dy, dx);
+   vertex(x, y);
+   endShape(); 
+
+   if (rem > 0) {
+       angle = rem/s;
+       if (angle > PI) {
+            angle = PI - 0.0001
+       }
+       arc(x + rad*Math.cos(lineAngle), y + rad*Math.sin(lineAngle), 2*rad, 2*rad, -angle + lineAngle + PI, angle + lineAngle + PI);
+   }
+   pop()
+   return false
+}
+
+let example_lines = []
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomLine(xs, ud) {
+    n_points = getRandomInt(1, 4)
+    if ((ud % 2) == 0) {
+        f = 1
+    } 
+    else {
+        f = -1
+    }
+    xs += getRandomInt(-20, 20) 
+    ps = [{x: xs, y: H/2 + 1*f}]
+    for (let i = 0; i < n_points; i++) {
+        let x = getRandomInt(20, 70)
+        let d = Math.random()
+        if ((d > 0.3) && (i != 0)) {
+            y = 0
+        }
+        else {
+            x = getRandomInt(10, 50)
+            y = x*f
+        }
+        let la = ps[ps.length - 1];
+        ps.push({x: x + la.x, y: y + la.y})
+    }
+    return ps
+}
+
+function glow(glowColor, blurriness){
+  drawingContext.shadowBlur = blurriness;
+  drawingContext.shadowColor = glowColor;
+}
+
+
+
+function shiftLines(dx) {
+    for (let i = 0; i < example_lines.length; i++) {
+        for (let j = 0; j < example_lines[i].l.length; j++) {
+            example_lines[i].l[j].x += dx
+        }
+    }
+}
+
+refLines = []; 
+
+inc = 0;
+
+function draw() {
+    t += 1;
+	background(color(0, 0, bgb))
+    let del_idxs = [];
+
+    shiftLines(-3.5);
+    if (t % M == 0) {
+        if (inc == refLines.length) {
+            inc = 0;
+            console.log("REPEAT");
+	        createLoop({gif: true, duration: N*M/fps})
+        }
+        let l = structuredClone(refLines[inc])
+        example_lines.push(
+            {t:t, l: l}
+        )
+        inc+=1;
+    }
+    for (let i = 0; i < example_lines.length; i++) {
+        let l = example_lines[i];
+        let del = drawLineSegmentsTo(l.l, (t - l.t)*4 + l.l[0].x);
+        if (del) {
+            del_idxs.push(i);
+        }
+    }
+    drawLineSegmentsTo([{x:0, y: H/2}, {x: W - 20*rad, y: H/2}], W);
+    for (const idx of del_idxs) {
+       example_lines.splice(idx, 1) 
+    }
+}
+</script> 

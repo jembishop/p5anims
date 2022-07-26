@@ -1,0 +1,58 @@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/p5.min.js"></script>
+    <script src="https://unpkg.com/p5.createloop@latest/dist/p5.createloop.js"></script> 
+<script>
+
+console.log('running animation.js');
+
+
+t = 0;
+xs = 325
+ys = 325
+size = 100
+rad = 200
+s = 400
+n = 4
+
+function setup() {
+	createCanvas(650, 650);
+	fps = 60
+	frameRate(fps)
+	d = s/fps
+	createLoop({duration:d,gif:true})
+
+}
+
+
+function mcircle(offset) {
+    
+	xc = xs + rad*Math.sin((t*Math.PI*2)/s + offset);
+	yc = ys + rad*Math.cos((t*Math.PI*2)/s + offset);
+	xo = Math.abs(xs - xc) - size
+	yo = Math.abs(ys - yc) - size
+
+	xo = Math.max(xo, 0)
+	yo = Math.max(yo, 0)
+	
+	r = Math.sqrt((xo*xo + yo*yo))
+	fill(100, r*2, r*2)
+	circle(xc, yc, r)
+    fill(0, 0, 0)
+    circle(xc, yc, 5)
+}
+function draw() {
+	background(255, 255, 255);
+    t += 1;
+
+	fill(200, 100, 100)
+	square(xs - size, ys - size, 2*size)
+    for (i=0; i < n; i++) {
+        mcircle(i*(2*Math.PI)/n)  
+    }
+	noFill();
+	circle(ys, xs, rad)
+
+
+
+
+}
+</script> 

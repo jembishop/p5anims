@@ -1,0 +1,81 @@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/p5.min.js"></script>
+    <script src="https://unpkg.com/p5.createloop@latest/dist/p5.createloop.js"></script> 
+<script>
+
+console.log('running animation.js');
+
+
+t = 0;
+xs = 325
+ys = 325
+size = 100
+rad = 200
+s = 400
+n = 4
+
+function setup() {
+	createCanvas(650, 650);
+	fps = 60
+	frameRate(fps)
+	d = s/fps
+	// createLoop({duration:d,gif:true})
+
+}
+
+
+// function mcircle(offset) {
+    
+// 	xc = xs + rad*Math.sin((t*Math.PI*2)/s + offset);
+// 	yc = ys + rad*Math.cos((t*Math.PI*2)/s + offset);
+// 	xo = Math.abs(xs - xc) - size
+// 	yo = Math.abs(ys - yc) - size
+
+// 	xo = Math.max(xo, 0)
+// 	yo = Math.max(yo, 0)
+	
+// 	r = Math.sqrt((xo*xo + yo*yo))
+// 	fill(100, r*2, r*2)
+// 	circle(xc, yc, r)
+//     fill(0, 0, 0)
+//     circle(xc, yc, 5)
+// }
+
+circles = [
+	{r: 100, p: [100, 100] },
+	{r: 50, p: [200, 250] },
+	{r: 120, p: [500, 300] },
+	{r: 80, p: [300, 130] },
+];
+
+function point_dist(p1, p2) {
+	return Math.sqrt(Math.pow((p1[0] - p2[0]), 2) + Math.pow((p1[1] - p2[1]), 2))
+}
+
+function nearest_circle(p) {
+	let best_d = 100000;
+	let best_idx = -1;
+	for (c of circles) {
+		let d = point_dist(c.r, p);
+		if (d < best_d) {
+			best_d = d;
+		}
+	}
+}
+
+function draw() {
+	background(0, 0, 0);
+    t += 1;
+	for (c of circles) {
+		 stroke(255);
+	 	fill(100, 255, 100)
+		 glow(color(255, 255, 255), 20);
+    	circle(c.p[0], c.p[1], c.r)
+	}
+
+}
+
+function glow(glowColor, blurriness){
+  drawingContext.shadowBlur = blurriness;
+  drawingContext.shadowColor = glowColor;
+}
+</script> 
