@@ -27,9 +27,9 @@ function rotateVectorAroundPoint(vector, origin, angle) {
 }
 
 function preload() {
-  img = loadImage('assets/cylinderical.png');
-  dart_tex = loadImage('assets/dart.png');
-  mod = loadModel('assets/dart.obj', true);
+  img = loadImage('./assets/cylinderical.png');
+  dart_tex = loadImage('./assets/dart.png');
+  mod = loadModel('./assets/dart.obj', true);
 
 //   img2 = loadImage('maps/mp4shift.png');
 //   myShader = loadShader('shaders/shader.vert', 'shaders/shader.frag');
