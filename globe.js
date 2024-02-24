@@ -1,26 +1,6 @@
 
 SCREEN_SIZE = 512
 
-function axisAngleToExtrinsic(axis, angle) {
-    // Normalize the axis vector
-    let normalizedAxis = axis.copy().normalize();
-    
-    // Calculate the extrinsic rotation angles to align the axis with the Z-axis
-    let alphaY = Math.atan2(normalizedAxis.x, normalizedAxis.z);
-    let alphaX = Math.asin(normalizedAxis.y);
-    
-    // Apply extrinsic rotations to align the axis with the Z-axis
-    let rotatedAxis = normalizedAxis.copy();
-    rotatedAxis.rotateY(-alphaY);
-    rotatedAxis.rotateX(-alphaX);
-    
-    // Calculate the extrinsic rotation angles from the rotated axis
-    let betaX = -Math.atan2(rotatedAxis.z, rotatedAxis.y);
-    let betaY = -Math.atan2(rotatedAxis.z, rotatedAxis.x);
-    
-    return { alphaX: alphaX, alphaY: alphaY, betaX: betaX, betaY: betaY };
-}
-
 function setup() {
 	cnv = createCanvas(SCREEN_SIZE, SCREEN_SIZE, WEBGL);
     dartPos = createVector(0, 0, 0);
