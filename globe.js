@@ -112,6 +112,9 @@ function draw() {
                 (response) => {
                     response.json().then(
                         (response) => {
+                            if (response.status.code == 402) {
+                                alert("Well done reddit, you used up the API limit! Wait till tomorrow to try again!")
+                            }
                             code = response.results[0].components.country_code
                             print(response.rate.remaining)
                             if (code != undefined) {
