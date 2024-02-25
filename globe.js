@@ -101,22 +101,25 @@ function draw() {
                latitude = Math.asin(diff.y / diff.mag()) * (180 / Math.PI) - 5; 
                longitude = -(Math.atan2(diff.z, diff.x) + globeAngle - Math.PI/2)* (180 / Math.PI);
                n = 360;
-               longitude = ((longitude % n) + n) % n;
+               print("RAW LONG", longitude)
+               longitude = longitude % n;
                if (longitude > 180) {
                   print("converting")
                   longitude = 180 - longitude
                }
                print(`${latitude},${longitude}`)
-               url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}%2C${longitude}&key=dcf69a2cb8584cf79951519003b29276`
+            //    url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}%2C${longitude}&key=dcf69a2cb8584cf79951519003b29276`
+               url = `https://geocode.maps.co/reverse?lat=${latitude}&lon=${longitude}`
                fetch(url).then(
                 (response) => {
+                    print(response)
+                    if (response.status == 401) {
+                        alert("Woops, api error, try again")
+                    }
                     response.json().then(
                         (response) => {
-                            if (response.status.code == 402) {
-                                alert("Well done reddit, you used up the API limit! Wait till tomorrow to try again!")
-                            }
-                            code = response.results[0].components.country_code
-                            print(response.rate.remaining)
+                            print(response)
+                            code = response.address.country_code;
                             if (code != undefined) {
                                 code = code.toUpperCase();
                                 console.log(code);
